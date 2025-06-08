@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <title>ثبت سفارش خشک‌شویی</title>
+  <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      font-family: 'Vazirmatn', sans-serif;
+      background-color: #f5f7fa;
+      padding: 40px;
+      direction: rtl;
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: auto;
+      background-color: #fff;
+      padding: 30px 40px;
+      border-radius: 16px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+    }
+
+    h2 {
+      text-align: center;
+      color: #333;
+      margin-bottom: 30px;
+    }
+
+    .order-item {
+      background: #fdfdfd;
+      border: 1px solid #ddd;
+      padding: 20px;
+      border-radius: 12px;
+      margin-bottom: 20px;
+      position: relative;
+    }
+
+    .order-item::before {
+      content: "آیتم سفارش";
+      position: absolute;
+      top: -12px;
+      right: 20px;
+      background: #007bff;
+      color: white;
+      font-size: 13px;
+      padding: 2px 10px;
+      border-radius: 6px;
+    }
+
+    .row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      margin-bottom: 20px;
+    }
+
+    .col {
+      flex: 1;
+      min-width: 220px;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+    }
+
+    label {
+      margin-bottom: 6px;
+      font-weight: 600;
+      color: #444;
+    }
+
+    input[type="text"],
+    input[type="number"],
+    input[type="date"],
+    input[type="time"],
+    select,
+    textarea {
+      padding: 10px 12px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 15px;
+      background-color: #fefefe;
+    }
+
+    input:focus, textarea:focus, select:focus {
+      border-color: #007bff;
+      outline: none;
+    }
+
+    textarea { resize: none; }
+
+    .checkbox-group,
+    .radio-group {
+      background-color: #f3f4f6;
+      border-radius: 8px;
+      padding: 10px 12px;
+      border: 1px solid #ddd;
+    }
+
+    .result-box {
+      border: 2px dashed #ccc;
+      background: #fafafa;
+      padding: 20px;
+      border-radius: 12px;
+      margin-top: 20px;
+    }
+
+    .buttons {
+      text-align: center;
+      margin-top: 25px;
+    }
+
+    .buttons button {
+      padding: 12px 30px;
+      margin: 0 10px;
+      font-size: 16px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    .submit-btn {
+      background-color: #007bff;
+      color: #fff;
+    }
+
+    .cancel-btn {
+      background-color: #dc3545;
+      color: #fff;
+    }
+
+    .add-btn {
+      background-color: #28a745;
+      color: #fff;
+      margin-bottom: 20px;
+    }
+
+    .remove-btn {
+      background-color: #dc3545;
+      color: white;
+      margin-top: 15px;
+      font-size: 14px;
+      padding: 8px 12px;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+    }
+
+    .print-btn {
+      background-color: #6c757d;
+      color: white;
+    }
+
+    input[readonly] {
+      background-color: #eee;
+      cursor: not-allowed;
+    }
+
+    .success-toast {
+      display: none;
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      background-color: #28a745;
+      color: white;
+      padding: 14px 24px;
+      border-radius: 12px;
+      font-size: 16px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      z-index: 1000;
+      animation: fadeInOut 3s ease-in-out;
+    }
+
+    @keyframes fadeInOut {
+      0% { opacity: 0; transform: translateY(20px); }
+      10% { opacity: 1; transform: translateY(0); }
+      90% { opacity: 1; transform: translateY(0); }
+      100% { opacity: 0; transform: translateY(20px); }
+    }
+
+    .customer-info {
+      margin-bottom: 25px;
+      padding: 15px;
+      border: 1px dashed #aaa;
+      border-radius: 12px;
+      background-color: #fcfcfc;
+    }
+
+    .customer-info h3 {
+      margin-top: 0;
+      margin-bottom: 10px;
+      color: #007bff;
+    }
+
+    .customer-code-box {
+      font-size: 18px;
+      color: #555;
+      background-color: #f1f1f1;
+      padding: 10px 15px;
+      border-radius: 8px;
+      margin-top: 15px;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>ثبت سفارش خشک‌شویی</h2>
+
+    <div class="customer-info">
+      <h3>اطلاعات مشتری</h3>
+      <div class="row">
+        <div class="col form-group">
+          <label>کد مشتری</label>
+          <input type="text" placeholder="مثلاً 123456" id="customer-code-input" onblur="fillCustomerCodeBox()">
+        </div>
+        <div class="col form-group">
+          <label>نام و نام خانوادگی</label>
+          <input type="text" placeholder="مثلاً علی رضایی">
+        </div>
+        <div class="col form-group">
+          <label>شماره تماس</label>
+          <input type="text" placeholder="مثلاً 09123456789">
+        </div>
+      </div>
+      <div class="customer-code-box" id="customer-code-box"></div>
+    </div>
+
+    <div id="items-container"></div>
+
+    <div class="buttons">
+      <button class="add-btn" onclick="addOrderItem()">➕ افزودن آیتم جدید</button>
+    </div>
+
+    <div class="result-box" id="total-box">
+      <p><strong>مجموع کل سفارش:</strong> <span id="grand-total">0</span> تومان</p>
+    </div>
+
+    <div class="row">
+      <div class="col form-group">
+        <label>توضیحات کلی</label>
+        <textarea rows="3" placeholder="توضیحات بیشتر در مورد سفارش..."></textarea>
+      </div>
+      <div class="col form-group">
+        <label>آدرس انتخابی</label>
+        <input type="text" placeholder="منزل یا محل کار">
+      </div>
+      <div class="col form-group">
+        <label>تاریخ دریافت</label>
+        <input type="date">
+      </div>
+      <div class="col form-group">
+        <label>ساعت دریافت</label>
+        <input type="time">
+      </div>
+      <div class="col form-group">
+        <label>تاریخ تحویل</label>
+        <input type="date">
+      </div>
+      <div class="col form-group">
+        <label>ساعت تحویل</label>
+        <input type="time">
+      </div>
+      <div class="col form-group">
+        <label>روش پرداخت</label>
+        <div class="radio-group">
+          <label><input type="radio" name="pay" checked> نقدی</label>
+          <label><input type="radio" name="pay"> کارت‌خوان</label>
+          <label><input type="radio" name="pay"> آنلاین</label>
+        </div>
+      </div>
+    </div>
+
+    <div class="buttons">
+      <button class="submit-btn" onclick="showSuccessMessage()">ثبت سفارش</button>
+      <button class="cancel-btn">انصراف</button>
+      <button class="print-btn" onclick="window.print()">🖨 پرینت سفارش</button>
+    </div>
+  </div>
+
+  <div id="success-message" class="success-toast">✅ سفارش با موفقیت ثبت شد!</div>
+
+  <script>
+    let itemCounter = 0;
+
+    function addOrderItem() {
+      const container = document.getElementById('items-container');
+      const id = itemCounter++;
+
+      const item = document.createElement('div');
+      item.className = 'order-item';
+      item.setAttribute('data-id', id);
+
+      item.innerHTML = `
+        <div class="row">
+          <div class="col form-group">
+            <label>نوع آیتم</label>
+            <select>
+              <option>پیراهن</option>
+              <option>شلوار</option>
+              <option>کت</option>
+              <option>لباس بچگانه</option>
+            </select>
+          </div>
+
+          <div class="col form-group">
+            <label>نوع خدمات</label>
+            <div class="checkbox-group">
+              <label><input type="checkbox" checked> شستشو</label>
+              <label><input type="checkbox"> لکه‌گیری</label>
+              <label><input type="checkbox"> اتوکشی</label>
+            </div>
+          </div>
+
+          <div class="col form-group">
+            <label>تعداد</label>
+            <input type="number" id="qty-${id}" value="1" min="1" oninput="calculateTotal(${id})">
+          </div>
+
+          <div class="col form-group">
+            <label>قیمت واحد (تومان)</label>
+            <input type="number" id="unit-${id}" value="15000" oninput="calculateTotal(${id})">
+          </div>
+
+          <div class="col form-group">
+            <label>قیمت نهایی (تومان)</label>
+            <input type="number" id="final-${id}" readonly>
+          </div>
+        </div>
+        <button class="remove-btn" onclick="removeItem(${id})">🗑 حذف آیتم</button>
+      `;
+      container.appendChild(item);
+      calculateTotal(id);
+    }
+
+    function calculateTotal(id) {
+      const qty = parseInt(document.getElementById(`qty-${id}`).value) || 0;
+      const unit = parseInt(document.getElementById(`unit-${id}`).value) || 0;
+      const total = qty * unit;
+      document.getElementById(`final-${id}`).value = total;
+      updateGrandTotal();
+    }
+
+    function removeItem(id) {
+      const item = document.querySelector(`.order-item[data-id='${id}']`);
+      if (item) item.remove();
+      updateGrandTotal();
+    }
+
+    function updateGrandTotal() {
+      const totals = document.querySelectorAll("input[id^='final-']");
+      let grand = 0;
+      totals.forEach(input => grand += parseInt(input.value) || 0);
+      document.getElementById('grand-total').textContent = grand.toLocaleString();
+    }
+
+    function showSuccessMessage() {
+      const toast = document.getElementById('success-message');
+      toast.style.display = 'block';
+      setTimeout(() => {
+        toast.style.display = 'none';
+      }, 3000);
+    }
+
+    function fillCustomerCodeBox() {
+      const code = document.getElementById('customer-code-input').value.trim();
+      const box = document.getElementById('customer-code-box');
+      if (code) {
+        box.textContent = `کد مشتری: ${code}`;
+        box.style.display = 'block';
+      } else {
+        box.style.display = 'none';
+      }
+    }
+
+    window.onload = addOrderItem;
+  </script>
+</body>
+</html>

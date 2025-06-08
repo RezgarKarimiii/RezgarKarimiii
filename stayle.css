@@ -1,0 +1,23 @@
+h1 {
+ color: blue;
+}
+h1 :hover{
+    background-color: brown;
+}
+h2 {
+    color: rgb(255, 0, 68);
+}
+table,tr,td{
+    border: black 1px solid;
+   border-collapse:collapse;
+}
+
+tr:nth-child(odd){
+  background-color: rgb(197, 255, 240);
+}
+tr :hover{
+    background-color: rgb(234, 151, 236);
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+    font-size: 20px;
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+}
