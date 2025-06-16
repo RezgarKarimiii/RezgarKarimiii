@@ -107,8 +107,4 @@ def compute_word_similarity(word, word_to_index, idf, tfidf1, tfidf2):
 words_input = input("Enter words to check similarity (comma separated): ")
 words_to_check = [word.strip() for word in words_input.split(",")]
 
-# محاسبه شباهت برای هر کلمه
-for word in words_to_check:
-    similarity1, similarity2 = compute_word_similarity(word, word_to_index, idf, tfidf1, tfidf2)
-    print(f"Similarity of '{word}' with doc1: {similarity1:.4f}")
-    print(f"Similarity of '{word}' with doc2: {similarity2:.4f}")
+
